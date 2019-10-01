@@ -4,6 +4,8 @@
 
 use serde::Serialize;
 
+use rocket_contrib::templates::Template;
+
 #[get("/")]
 fn index() -> &'static str {
     "Hello, world!"
