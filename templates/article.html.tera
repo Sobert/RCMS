@@ -1,0 +1,12 @@
+{% extends "base" %}
+
+{% block title %}-Article {{ article.title }}{% endblock %}
+
+{% block content %}
+<p id="date"> {{ article.date }}</p>
+<h2> {{ article.title }}</h2>
+<p> {{ article.content|safe }} </p>
+<p id="author">{{ article.author.name }}.</p>
+<br/>
+
+{% endblock content %} 
