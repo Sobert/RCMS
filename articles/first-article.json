@@ -1,6 +1,7 @@
 {
     "date": "10/10/2020",
     "title": "the first article",
+    "intro": "first article",
     "content": "Lorem Ipsum",
     "author": {
         "name": "author"

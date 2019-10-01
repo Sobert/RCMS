@@ -12,8 +12,10 @@ use rocket_contrib::templates::Template;
 use tera::Context;
 
 #[get("/")]
-fn index() -> &'static str {
-    "you can visit <a href=\"first-article\">the first article</a>"
+fn index() -> Template {
+    let mut context = Context::new();
+    context.insert("articles", &get_articles_index());
+    Template::render("index", context)
 }
 
 #[get("/<name>")]
@@ -49,6 +51,13 @@ fn parse_article(content: String) -> Article {
     }
 }
 
+fn get_articles_index() -> Vec<ArticleExcerpt> {
+    match serde_json::from_str::<Vec<ArticleExcerpt>>(&read_file("index".to_string())) {
+        Err(e) => panic!("Error retrieving index: {}", e),
+        Ok(v) => v
+    }
+}
+
 fn main() {
     rocket::ignite()
     .mount("/", routes![index, get_article])
@@ -61,9 +70,18 @@ fn main() {
 struct Article {
     date: String,
     title: String,
+    intro: String,
     content: String,
     author: Author,
     published: bool
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct ArticleExcerpt {
+    date: String,
+    title: String,
+    intro: String,
+    link: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
