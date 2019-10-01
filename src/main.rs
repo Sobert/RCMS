@@ -2,7 +2,9 @@
 
 #[macro_use] extern crate rocket;
 
+use std::path::{Path, PathBuf};
 use rocket::http::RawStr;
+use rocket::response::NamedFile;
 use serde::Serialize;
 
 use rocket_contrib::templates::Template;
@@ -27,9 +29,15 @@ fn get_article(name: &RawStr) -> Template {
     Template::render("article", context)
 }
 
+#[get("/<path..>")]
+fn assets(path: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new("static").join(path)).ok()
+}
+
 fn main() {
     rocket::ignite()
     .mount("/", routes![index, get_article])
+    .mount("/public", routes![assets])
     .attach(Template::fairing())
     .launch();
 }
