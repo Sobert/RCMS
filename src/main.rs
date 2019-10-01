@@ -2,28 +2,23 @@
 
 #[macro_use] extern crate rocket;
 
+use std::fs;
 use std::path::{Path, PathBuf};
 use rocket::http::RawStr;
 use rocket::response::NamedFile;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 use rocket_contrib::templates::Template;
 use tera::Context;
 
 #[get("/")]
 fn index() -> &'static str {
-    "Hello, world!"
+    "you can visit <a href=\"first-article\">the first article</a>"
 }
 
 #[get("/<name>")]
 fn get_article(name: &RawStr) -> Template {
-    let article = Article {
-        date: "10/10/2020".to_string(),
-        title: "Test title".to_string(),
-        content: "lorem ipsum bla bla".to_string(),
-        author: Author { name: "Basic Author".to_string() },
-        published: true, 
-    };
+    let article = parse_article(read_file(name.to_string()));
     let mut context = Context::new();
     context.insert("article", &article);
     Template::render("article", context)
@@ -34,6 +29,26 @@ fn assets(path: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("static").join(path)).ok()
 }
 
+fn read_file(name: String) -> String {
+    let path = Path::new("articles").join(format!("{}.json",name));
+    println!("path: {:?}", path);
+    let content = fs::read_to_string(path);
+    match content {
+        Err(e) => panic!("error: {}", e),
+        Ok(content) => {
+            println!("character read: {}", content.len());
+            content
+        }
+    }
+}
+
+fn parse_article(content: String) -> Article {
+    match serde_json::from_str::<Article>(&content) {
+        Err(e) => panic!("error in parsing article: {}", e),
+        Ok(v) => v
+    }
+}
+
 fn main() {
     rocket::ignite()
     .mount("/", routes![index, get_article])
@@ -42,7 +57,7 @@ fn main() {
     .launch();
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Article {
     date: String,
     title: String,
@@ -51,7 +66,7 @@ struct Article {
     published: bool
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Author {
     name: String
 }

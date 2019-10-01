@@ -1,0 +1,9 @@
+{
+    "date": "10/10/2020",
+    "title": "the first article",
+    "content": "Lorem Ipsum",
+    "author": {
+        "name": "author"
+    },
+    "published": true
+}
