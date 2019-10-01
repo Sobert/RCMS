@@ -2,6 +2,8 @@
 
 #[macro_use] extern crate rocket;
 
+use serde::Serialize;
+
 #[get("/")]
 fn index() -> &'static str {
     "Hello, world!"
@@ -9,4 +11,19 @@ fn index() -> &'static str {
 
 fn main() {
     rocket::ignite().mount("/", routes![index]).launch();
+}
+
+#[derive(Serialize)]
+struct Article {
+    id: i32,
+    date: String,
+    title: String,
+    content: String,
+    author: Author,
+    published: bool
+}
+
+#[derive(Serialize)]
+struct Author {
+    name: String
 }
