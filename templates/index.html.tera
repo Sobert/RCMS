@@ -1,0 +1,7 @@
+<h1>Welcome</h1>
+{% for article in articles %}
+<h2><a href={{ article.link }}> {{ article.title }}</a></h2>
+<p id="date"> {{ article.date }}</p>
+<p> {{ article.intro|safe }} </p>
+{% endfor %}
+<br/>
